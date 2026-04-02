@@ -1,0 +1,179 @@
+@import url('https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
+@import "tailwindcss";
+
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Urbanist", sans-serif;
+  --breakpoint-3xl: 1920px;
+  
+  /* Dark Blue Galaxy Palette */
+  --color-background-deep: #05070D;
+  --color-background-surface: #0B1120;
+  --color-background-elevated: #111827;
+  
+  --color-accent-purple: #7C3AED;
+  --color-accent-blue: #2563EB;
+  --color-accent-neon: #38BDF8;
+  --color-accent-pink: #FF4D9D;
+  
+  --color-text-primary: #E5E7EB;
+  --color-text-secondary: #9CA3AF;
+  --color-text-muted: #6B7280;
+
+  /* Animations */
+  --animate-galaxy-float: galaxy-float 20s ease-in-out infinite;
+  --animate-star-twinkle: star-twinkle 3s ease-in-out infinite;
+  --animate-pulse-glow: pulse-glow 4s ease-in-out infinite;
+
+  @keyframes galaxy-float {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-20px) scale(1.05); }
+  }
+  @keyframes star-twinkle {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.2); }
+  }
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 5px rgba(124, 58, 237, 0.2); }
+    50% { box-shadow: 0 0 20px rgba(124, 58, 237, 0.4); }
+  }
+}
+
+@layer base {
+  html {
+    font-family: var(--font-display);
+    color: var(--color-text-primary);
+    background-color: var(--color-background-deep);
+  }
+
+  body {
+    background: radial-gradient(circle at 20% 30%, #0b1120, #05070d 60%);
+    color: var(--color-text-primary);
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-background-deep);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #27272A;
+    border-radius: 10px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #3F3F46;
+  }
+}
+
+/* Galaxy Background Elements */
+.galaxy-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background: radial-gradient(circle at 50% 50%, #0a0a0a 0%, #050505 100%);
+  overflow: hidden;
+}
+
+.galaxy-stars {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(1px 1px at 20px 30px, #fff, rgba(0,0,0,0)),
+    radial-gradient(1px 1px at 40px 70px, #fff, rgba(0,0,0,0)),
+    radial-gradient(1px 1px at 50px 160px, #fff, rgba(0,0,0,0)),
+    radial-gradient(2px 2px at 90px 40px, #fff, rgba(0,0,0,0)),
+    radial-gradient(2px 2px at 130px 80px, #fff, rgba(0,0,0,0)),
+    radial-gradient(2px 2px at 160px 120px, #fff, rgba(0,0,0,0));
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  opacity: 0.15;
+  animation: star-twinkle 4s ease-in-out infinite;
+}
+
+.nebula {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.05;
+  pointer-events: none;
+  animation: galaxy-float 15s ease-in-out infinite;
+}
+
+.nebula-purple {
+  background: var(--color-accent-purple);
+  top: -100px;
+  right: -100px;
+}
+
+.nebula-blue {
+  background: var(--color-accent-blue);
+  bottom: -100px;
+  left: -100px;
+  animation-delay: -5s;
+}
+
+/* Glassmorphism Utility */
+.glass {
+  background: rgba(11, 17, 32, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.glass-card {
+  background: rgba(17, 24, 39, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(56, 189, 248, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6), 0 0 15px rgba(37, 99, 235, 0.05);
+}
+@media print {
+  /* Hide everything */
+  .print-area, .print-area * {
+    visibility: visible;
+  }
+
+  /* Show only invoice section */
+  .print-area, .print-area * {
+    visibility: - [x] Fix AI Features
+    - [x] Handle `aiData` in `CreateInvoice.jsx`
+    - [x] Robust AI parsing in `aiController.js`
+    - [x] Verification and Polish;
+  }
+
+  /* Position it properly */
+  .print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+}
+
+/* Global Interactive Polish */
+@layer utilities {
+  .focus-nebula:focus-visible {
+    outline: 2px solid var(--color-accent-blue);
+    outline-offset: 2px;
+    box-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
+  }
+
+  * {
+    transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+  }
+}
