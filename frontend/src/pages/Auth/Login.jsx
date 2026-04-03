@@ -133,11 +133,11 @@ const Login = () => {
             </div>
 
             <h1 className="text-3xl font-black text-white tracking-tight">
-              Cosmic Login
+               Login
             </h1>
 
             <p className="text-text-secondary mt-3 font-medium">
-              Welcome back to your invoice nexus
+              Welcome back to your invoices
             </p>
           </div>
 
@@ -247,7 +247,7 @@ const Login = () => {
           {/* Footer */}
           <div className="mt-10 pt-8 border-t border-white/10 text-center">
             <p className="text-text-secondary font-medium">
-              New to the galaxy?{" "}
+              New to the application?{" "}
               <button
                 onClick={() => navigate("/signup")}
                 className="text-accent-blue font-bold hover:text-accent-purple transition-colors ml-1"

@@ -141,25 +141,41 @@
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6), 0 0 15px rgba(37, 99, 235, 0.05);
 }
 @media print {
-  /* Hide everything */
-  .print-area, .print-area * {
+
+  body * {
+    visibility: hidden;
+  }
+
+  #invoice-content-wrapper,
+  #invoice-content-wrapper * {
     visibility: visible;
   }
 
-  /* Show only invoice section */
-  .print-area, .print-area * {
-    visibility: - [x] Fix AI Features
-    - [x] Handle `aiData` in `CreateInvoice.jsx`
-    - [x] Robust AI parsing in `aiController.js`
-    - [x] Verification and Polish;
-  }
-
-  /* Position it properly */
-  .print-area {
+  #invoice-content-wrapper {
     position: absolute;
     left: 0;
     top: 0;
     width: 100%;
+    padding: 20px;
+    background: white;
+    color: black;
+  }
+
+  /* Remove glass effects */
+  .glass-card {
+    box-shadow: none !important;
+    background: white !important;
+    border: none !important;
+  }
+
+  /* Remove colors */
+  * {
+    color: black !important;
+  }
+
+  /* Hide buttons */
+  button {
+    display: none !important;
   }
 }
 

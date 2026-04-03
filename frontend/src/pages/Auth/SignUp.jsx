@@ -112,7 +112,7 @@ const SignUp = () => {
     );
   };
 
-  const handleSubmit = async () => {
+const handleSubmit = async () => {
   if (!isFormValid()) return;
 
   try {
@@ -121,7 +121,7 @@ const SignUp = () => {
     setSuccess("");
 
     const response = await axiosInstance.post(
-      API_PATHS.AUTH.REGISTER,  // or whatever your path is
+      API_PATHS.AUTH.REGISTER,
       {
         name: formData.name,
         email: formData.email,
@@ -132,11 +132,14 @@ const SignUp = () => {
     setSuccess("Account created successfully!");
     console.log(response.data);
 
+    // 🔥 Redirect to login after short delay
+    setTimeout(() => {
+      navigate("/login");
+    }, 1500);
+
   } catch (err) {
     console.log(err);
-    setError(
-      err.response?.data?.message || "Something went wrong"
-    );
+    setError(err.response?.data?.message || "Something went wrong");
   } finally {
     setIsLoading(false);
   }
@@ -161,11 +164,11 @@ const SignUp = () => {
             </div>
 
             <h1 className="text-3xl font-black text-white tracking-tight">
-              Join the Galaxy
+              Join.....! 
             </h1>
 
             <p className="text-text-secondary mt-3 font-medium">
-              Create your cosmic account today
+              Create your  account today
             </p>
           </div>
 

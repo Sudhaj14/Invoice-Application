@@ -77,10 +77,10 @@ const ProfilePage = () => {
       {/* Header Section */}
       <div className="mb-10 text-center sm:text-left">
         <h1 className="text-3xl font-black text-white tracking-tight">
-          Stellar Identity
+          Identity
         </h1>
         <p className="text-text-secondary mt-2 font-medium">
-          Manage your cosmic credentials and business nexus
+          Manage your credentials and business nexus
         </p>
       </div>
 

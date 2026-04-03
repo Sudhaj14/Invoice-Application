@@ -72,7 +72,7 @@ const ProfileDropdown = ({
               className="w-full text-left px-5 py-2.5 text-sm text-text-secondary hover:text-white hover:bg-white/5 transition-all duration-200 flex items-center gap-3 group"
             >
               <div className="w-1.5 h-1.5 rounded-full bg-accent-blue group-hover:scale-125 transition-transform"></div>
-              View Galactic Profile
+              View  Profile
             </button>
           </div>
 
@@ -82,7 +82,7 @@ const ProfileDropdown = ({
               className="w-full text-left px-5 py-2.5 text-sm text-accent-pink hover:bg-accent-pink/10 transition-all duration-200 flex items-center gap-3 group"
             >
               <div className="w-1.5 h-1.5 rounded-full bg-accent-pink group-hover:scale-125 transition-transform"></div>
-              Terminate Session
+              Logout
             </button>
           </div>
         </div>
@@ -91,4 +91,4 @@ const ProfileDropdown = ({
   );
 };
 
-export default ProfileDropdown;
+export default ProfileDropdown;

@@ -12,16 +12,38 @@ import TextareaField from "../../components/ui/TextareaField";
 import Button from "../../components/ui/Button";
 import SelectField from "../../components/ui/SelectField";
 
-const CreateInvoice = () => {
+const CreateInvoice = ({existingInvoice: propInvoice, onSave}) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
 
-  const existingInvoice = location.state?.invoice;
+  const existingInvoice = propInvoice || location.state?.invoice;
   const aiData = location.state?.aiData;
 
   const [formData, setFormData] = useState(() => {
-    if (existingInvoice) return existingInvoice;
+    if (existingInvoice) {
+  return {
+    ...existingInvoice,
+    billFrom: {
+      businessName:
+        existingInvoice.billFrom?.businessName ||
+        user?.businessName ||
+        "",
+      email:
+        existingInvoice.billFrom?.email ||
+        user?.email ||
+        "",
+      address:
+        existingInvoice.billFrom?.address ||
+        user?.address ||
+        "",
+      phone:
+        existingInvoice.billFrom?.phone ||
+        user?.phone ||
+        "",
+    },
+  };
+}
     
     if (aiData) {
       return {
@@ -80,42 +102,75 @@ const CreateInvoice = () => {
   /* ---------------- Invoice Number Generation ---------------- */
 
   useEffect(() => {
-    if (existingInvoice) {
-      setFormData({
-        ...existingInvoice,
-        invoiceDate: moment(existingInvoice.invoiceDate).format("YYYY-MM-DD"),
-        dueDate: moment(existingInvoice.dueDate).format("YYYY-MM-DD"),
+  if (existingInvoice) {
+    setFormData({
+      ...existingInvoice,
+      invoiceDate: moment(existingInvoice.invoiceDate).format("YYYY-MM-DD"),
+      dueDate: moment(existingInvoice.dueDate).format("YYYY-MM-DD"),
+      billFrom: {
+        businessName:
+          existingInvoice.billFrom?.businessName ||
+          user?.businessName ||
+          "",
+        email:
+          existingInvoice.billFrom?.email ||
+          user?.email ||
+          "",
+        address:
+          existingInvoice.billFrom?.address ||
+          user?.address ||
+          "",
+        phone:
+          existingInvoice.billFrom?.phone ||
+          user?.phone ||
+          "",
+      },
+    });
+    return;
+  }
+
+  const generateInvoiceNumber = async () => {
+    try {
+      const res = await axiosInstance.get(
+        API_PATHS.INVOICE.GET_ALL_INVOICES
+      );
+
+      let maxNum = 0;
+      res.data.forEach((inv) => {
+        const num = parseInt(inv.invoiceNumber?.split("-")[1]);
+        if (!isNaN(num) && num > maxNum) maxNum = num;
       });
-      return;
+
+      const newNumber = `INV-${String(maxNum + 1).padStart(3, "0")}`;
+
+      setFormData((prev) => ({
+        ...prev,
+        invoiceNumber: newNumber,
+      }));
+    } catch {
+      toast.error("Failed to generate invoice number");
+    } finally {
+      setIsGeneratingNumber(false);
     }
+  };
 
-    const generateInvoiceNumber = async () => {
-      try {
-        const res = await axiosInstance.get(
-          API_PATHS.INVOICE.GET_ALL_INVOICES
-        );
+  generateInvoiceNumber();
+}, [existingInvoice, user]); // ✅ added user here
 
-        let maxNum = 0;
-        res.data.forEach((inv) => {
-          const num = parseInt(inv.invoiceNumber?.split("-")[1]);
-          if (!isNaN(num) && num > maxNum) maxNum = num;
-        });
-
-        const newNumber = `INV-${String(maxNum + 1).padStart(3, "0")}`;
-
-        setFormData((prev) => ({
-          ...prev,
-          invoiceNumber: newNumber,
-        }));
-      } catch {
-        toast.error("Failed to generate invoice number");
-      } finally {
-        setIsGeneratingNumber(false);
-      }
-    };
-
-    generateInvoiceNumber();
-  }, [existingInvoice]);
+useEffect(() => {
+  if (user) {
+    setFormData((prev) => ({
+      ...prev,
+      billFrom: {
+        businessName:
+          prev.billFrom?.businessName || user.businessName || "",
+        email: prev.billFrom?.email || user.email || "",
+        address: prev.billFrom?.address || user.address || "",
+        phone: prev.billFrom?.phone || user.phone || "",
+      },
+    }));
+  }
+}, [user]);
 
   /* ---------------- Input Handler ---------------- */
 
@@ -235,28 +290,30 @@ const validateForm = () => {
   setLoading(true);
 
   try {
-    if (existingInvoice) {
-      await axiosInstance.put(
-        API_PATHS.INVOICE.UPDATE_INVOICE(existingInvoice._id),
-        { ...formData, subtotal, taxTotal, total }
-      );
-      toast.success("Invoice updated successfully");
-    } else {
-      await axiosInstance.post(
-        API_PATHS.INVOICE.CREATE,
-        { ...formData, subtotal, taxTotal, total }
-      );
-      toast.success("Invoice created successfully");
-    }
-
-    navigate("/dashboard");
-  } catch {
-    toast.error("Something went wrong");
-  } finally {
-    setLoading(false);
+  if (existingInvoice && !onSave) {
+    await axiosInstance.put(
+      API_PATHS.INVOICE.UPDATE_INVOICE(existingInvoice._id),
+      { ...formData, subtotal, taxTotal, total }
+    );
+    toast.success("Invoice updated successfully");
+  } else if (onSave) {
+    await onSave({ ...formData, subtotal, taxTotal, total });
+  } else {
+    await axiosInstance.post(
+      API_PATHS.INVOICE.CREATE,
+      { ...formData, subtotal, taxTotal, total }
+    );
+    toast.success("Invoice created successfully");
   }
+
+  navigate("/dashboard");
+} catch {
+  toast.error("Something went wrong");
+} finally {
+  setLoading(false);
+}
 };
-  /* ---------------- UI ---------------- */
+  
 
   return (
     <div className="pb-20">
@@ -269,7 +326,7 @@ const validateForm = () => {
             </div>
             <div>
               <h2 className="text-3xl font-black text-white tracking-tight">
-                {existingInvoice ? "Edit Cosmic Invoice" : "Forge New Invoice"}
+                {existingInvoice ? "Edit  Invoice" : "Forge New Invoice"}
               </h2>
               <p className="text-text-secondary mt-1 font-medium italic">
                 {existingInvoice ? "Recalibrating existing transaction data" : "Transcribing a new galactic shipment"}
@@ -282,7 +339,7 @@ const validateForm = () => {
             disabled={loading || isGeneratingNumber}
             className="shadow-[0_0_20px_rgba(37,99,235,0.3)] hover:shadow-[0_0_30px_rgba(56,189,248,0.4)]"
           >
-            {loading ? "Processing..." : (existingInvoice ? "Finalize Changes" : "Save to Nebula")}
+            {loading ? "Processing..." : (existingInvoice ? "Finalize Changes" : "Save Invoice")}
           </Button>
         </div>
 
@@ -299,7 +356,7 @@ const validateForm = () => {
             />
 
             <InputField
-              label="Stellar Date"
+              label="Date"
               type="date"
               name="invoiceDate"
               value={formData.invoiceDate}
@@ -330,7 +387,7 @@ const validateForm = () => {
               <InputField
                 label="Sender Business"
                 name="businessName"
-                value={formData.billFrom.businessName}
+                value={formData.billFrom?.businessName || ""}
                 onChange={(e) => handleInputChange(e, "billFrom")}
               />
 

@@ -157,7 +157,7 @@ const AllInvoices = () => {
             All Invoices
           </h1>
           <p className="text-text-secondary mt-2">
-            Manage your cosmic transactions in one place
+            Manage your transactions in one place
           </p>
         </div>
 

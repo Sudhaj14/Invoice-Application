@@ -1,9 +1,68 @@
 const { GoogleGenAI } = require("@google/genai");
 const Invoice = require("../models/Invoice");
 
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY,
-});
+// Initialize AI only if API key is available and AI is enabled
+let ai = null;
+const useAI = process.env.USE_AI !== 'false' && process.env.GEMINI_API_KEY;
+
+if (useAI) {
+  try {
+    ai = new GoogleGenAI({
+      apiKey: process.env.GEMINI_API_KEY,
+    });
+  } catch (error) {
+    console.error('Failed to initialize Gemini AI:', error.message);
+    ai = null;
+  }
+}
+
+// Helper function for delay
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+// Helper function to handle AI calls with retry and fallback
+const callGeminiWithRetry = async (prompt, fallbackResponse, maxRetries = 1) => {
+  const useAI = process.env.USE_AI !== 'false' && ai; // Check both flag and initialization
+  
+  if (!useAI) {
+    console.log('AI is disabled or not properly initialized - using fallback response');
+    return fallbackResponse;
+  }
+
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-2.0-flash",
+      contents: prompt,
+    });
+
+    let responseText =
+      typeof response.text === "function"
+        ? response.text()
+        : response.text;
+
+    return responseText;
+  } catch (error) {
+    console.error('Gemini API error:', error);
+    
+    // Check if it's a quota exceeded error (429)
+    if (error.status === 429 || error.message?.includes('RESOURCE_EXHAUSTED') || error.message?.includes('quota exceeded')) {
+      console.log('Gemini quota exceeded. Attempting retry if retryDelay is available...');
+      
+      // Try retry if retryDelay is provided
+      if (maxRetries > 0 && error.retryDelay) {
+        console.log(`Retrying after ${error.retryDelay}ms delay...`);
+        await delay(error.retryDelay);
+        return callGeminiWithRetry(prompt, fallbackResponse, maxRetries - 1);
+      }
+      
+      console.log('Gemini quota exceeded - using fallback response');
+      return fallbackResponse;
+    }
+    
+    // For other errors, also use fallback
+    console.log('AI call failed - using fallback response');
+    return fallbackResponse;
+  }
+};
 
 /* =========================================
    PARSE INVOICE FROM TEXT
@@ -43,15 +102,15 @@ ${text}
 Extract the data and provide only the JSON object.
 `;
 
-    const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash",
-      contents: prompt,
+    // Fallback response for when AI is unavailable
+    const fallbackResponse = JSON.stringify({
+      clientName: "Client",
+      email: "",
+      address: "",
+      items: []
     });
 
-    let responseText =
-      typeof response.text === "function"
-        ? response.text()
-        : response.text;
+    const responseText = await callGeminiWithRetry(prompt, fallbackResponse);
 
     // Use regex to find the first JSON block or the entire text if no block format is used
     const jsonMatch = responseText.match(/\{[\s\S]*\}|\[[\s\S]*\]/);
@@ -62,9 +121,12 @@ Extract the data and provide only the JSON object.
     res.status(200).json(parsedData);
   } catch (error) {
     console.error("Error parsing invoice with AI:", error);
-    res.status(500).json({
-      message: "Failed to parse invoice data from text.",
-      details: error.message,
+    // Return fallback data instead of error
+    res.status(200).json({
+      clientName: "Client",
+      email: "",
+      address: "",
+      items: []
     });
   }
 };
@@ -102,23 +164,35 @@ The tone should be friendly but clear. Keep it concise.
 Start the email with "Subject:".
 `;
 
-    const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash",
-      contents: prompt,
-    });
+    // Fallback response for when AI is unavailable
+    const fallbackResponse = `Subject: Friendly Reminder: Invoice ${invoice.invoiceNumber}
 
-    const reminderText =
-      typeof response.text === "function"
-        ? response.text()
-        : response.text;
+Dear ${invoice.billTo?.clientName || 'Client'},
+
+This is a friendly reminder that invoice ${invoice.invoiceNumber} for ₹${invoice.total?.toFixed(2) || '0.00'} is due on ${new Date(invoice.dueDate).toLocaleDateString()}.
+
+Please let us know if you have any questions.
+
+Thank you for your business!`;
+
+    const reminderText = await callGeminiWithRetry(prompt, fallbackResponse);
 
     res.status(200).json({ reminderText });
   } catch (error) {
     console.error("Error generating reminder email with AI:", error);
-    res.status(500).json({
-      message: "Failed to generate reminder email.",
-      details: error.message,
-    });
+    // Return fallback email instead of error
+    const invoice = await Invoice.findById(invoiceId);
+    const fallbackEmail = `Subject: Friendly Reminder: Invoice ${invoice?.invoiceNumber || 'Unknown'}
+
+Dear ${invoice?.billTo?.clientName || 'Client'},
+
+This is a friendly reminder that your invoice is due soon.
+
+Please let us know if you have any questions.
+
+Thank you for your business!`;
+    
+    res.status(200).json({ reminderText: fallbackEmail });
   }
 };
 
@@ -178,15 +252,14 @@ ${dataSummary}
 Return only a JSON array of insights.
 `;
 
-    const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash",
-      contents: prompt,
-    });
+    // Fallback response for when AI is unavailable
+    const fallbackResponse = JSON.stringify([
+      "AI insights temporarily unavailable. Please try again later.",
+      `You have ${totalInvoices} total invoices with ${totalOutstanding.toFixed(2)} outstanding.`,
+      "Consider following up on unpaid invoices to improve cash flow."
+    ]);
 
-    let responseText =
-      typeof response.text === "function"
-        ? response.text()
-        : response.text;
+    const responseText = await callGeminiWithRetry(prompt, fallbackResponse);
 
     const jsonMatch = responseText.match(/\[[\s\S]*\]/);
     const cleaned = jsonMatch ? jsonMatch[0] : responseText.trim();
@@ -196,9 +269,12 @@ Return only a JSON array of insights.
     res.status(200).json({ insights });
   } catch (error) {
     console.error("Error dashboard summary with AI:", error);
-    res.status(500).json({
-      message: "Failed to generate dashboard insights.",
-      details: error.message,
+    // Return fallback insights instead of error
+    res.status(200).json({
+      insights: [
+        "AI insights temporarily unavailable. Please try again later.",
+        "Continue monitoring your invoice performance regularly."
+      ]
     });
   }
 };
