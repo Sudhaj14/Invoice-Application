@@ -115,11 +115,11 @@ const InvoiceDetail = () => {
 
   return (
     <div className="pb-20">
-      <ReminderModal
+      {/* <ReminderModal
         isOpen={isReminderModalOpen}
         onClose={() => setIsReminderModalOpen(false)}
         invoice={invoice}
-      />
+      /> */}
 
       {/* HEADER */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
@@ -133,15 +133,7 @@ const InvoiceDetail = () => {
         </div>
 
         <div className="flex flex-wrap gap-3">
-          {invoice.status !== "Paid" && (
-            <Button
-              variant="secondary"
-              onClick={() => setIsReminderModalOpen(true)}
-            >
-              <Mail className="w-4 h-4 mr-2 text-accent-blue" />
-              Send Reminder
-            </Button>
-          )}
+
 
           <Button
             variant="secondary"
