@@ -6,19 +6,16 @@ import {
   Loader2,
   AlertCircle,
   Plus,
-  Sparkles,
   Search,
   FileText,
   Edit,
   Trash2,
-  Mail,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
 
 import Button from "../../components/ui/Button";
-import CreateWithAiModal from "../../components/invoices/CreateWithAiModal";
-import ReminderModal from "../../components/invoices/ReminderModal";
+
 
 const AllInvoices = () => {
   const [invoices, setInvoices] = useState([]);
@@ -28,8 +25,8 @@ const AllInvoices = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
 
-  const [isAiModalOpen, setIsAiModalOpen] = useState(false);
-  const [isReminderModalOpen, setIsReminderModalOpen] = useState(false);
+
+
 
   const [selectedInvoiceId, setSelectedInvoiceId] = useState(null);
   const [statusChangeLoading, setStatusChangeLoading] = useState(null);
@@ -121,11 +118,7 @@ const AllInvoices = () => {
     setStatusChangeLoading(null);
   }
 };
-  // ================= REMINDER =================
-  const handleOpenReminderModal = (id) => {
-    setSelectedInvoiceId(id);
-    setIsReminderModalOpen(true);
-  };
+
 
   // ================= LOADING =================
   if (loading) {
@@ -138,17 +131,9 @@ const AllInvoices = () => {
 
   return (
     <div className="space-y-8 pb-10">
-      {/* MODALS */}
-      <CreateWithAiModal
-        isOpen={isAiModalOpen}
-        onClose={() => setIsAiModalOpen(false)}
-      />
 
-      <ReminderModal
-        isOpen={isReminderModalOpen}
-        onClose={() => setIsReminderModalOpen(false)}
-        invoiceId={selectedInvoiceId}
-      />
+
+
 
       {/* HEADER */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
@@ -162,13 +147,7 @@ const AllInvoices = () => {
         </div>
 
         <div className="flex items-center gap-3">
-          <Button
-            variant="secondary"
-            onClick={() => setIsAiModalOpen(true)}
-          >
-            <Sparkles className="w-4 h-4 mr-2 text-accent-blue" />
-            Create with AI
-          </Button>
+
 
           <Button
             onClick={() => navigate("/invoices/new")}
@@ -342,15 +321,7 @@ const AllInvoices = () => {
                           <Trash2 className="w-4 h-4" />
                         </button>
 
-                        {invoice.status !== "Paid" && (
-                          <button
-                            onClick={() => handleOpenReminderModal(invoice._id)}
-                            className="p-2 bg-accent-blue/10 text-accent-blue border border-accent-blue/20 rounded-lg hover:bg-accent-blue hover:text-white transition-all"
-                            title="Send Reminder"
-                          >
-                            <Mail className="w-4 h-4" />
-                          </button>
-                        )}
+
                       </div>
                     </td>
                   </tr>

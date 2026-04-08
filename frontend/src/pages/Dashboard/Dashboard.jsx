@@ -5,7 +5,7 @@ import { Loader2, FileText, DollarSign, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import Button from "../../components/ui/Button";
-import AIInsightsCard from "../../components/AIInsightsCard";
+
 const Dashboard = () => {
   const [stats, setStats] = useState({
     totalInvoices: 0,
@@ -138,7 +138,7 @@ const totalUnpaid = invoices
         ))}
       </div>
 
-      <AIInsightsCard/>
+
 
       <div className="glass-card rounded-2xl border border-white/10 overflow-hidden shadow-2xl">
         <div className="px-8 py-6 border-b border-white/10 flex justify-between items-center bg-white/2">

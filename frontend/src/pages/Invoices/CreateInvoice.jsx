@@ -18,7 +18,6 @@ const CreateInvoice = ({existingInvoice: propInvoice, onSave}) => {
   const { user } = useAuth();
 
   const existingInvoice = propInvoice || location.state?.invoice;
-  const aiData = location.state?.aiData;
 
   const [formData, setFormData] = useState(() => {
     if (existingInvoice) {
@@ -45,33 +44,7 @@ const CreateInvoice = ({existingInvoice: propInvoice, onSave}) => {
   };
 }
     
-    if (aiData) {
-      return {
-        invoiceNumber: "",
-        invoiceDate: new Date().toISOString().split("T")[0],
-        dueDate: "",
-        billFrom: {
-          businessName: user?.businessName || "",
-          email: user?.email || "",
-          address: user?.address || "",
-          phone: user?.phone || "",
-        },
-        billTo: {
-          clientName: aiData.clientName || "",
-          email: aiData.email || "",
-          address: aiData.address || "",
-          phone: "",
-        },
-        items: aiData.items?.length > 0 
-          ? aiData.items.map(item => ({
-              ...item,
-              taxPercent: 0
-            }))
-          : [{ name: "", quantity: 1, unitPrice: 0, taxPercent: 0 }],
-        notes: "",
-        paymentTerms: "Net 15",
-      };
-    }
+
 
     return {
       invoiceNumber: "",
@@ -171,30 +144,7 @@ useEffect(() => {
     }));
   }
 }, [user]);
-useEffect(() => {
-  if (aiData) {
-    console.log("🔥 AI DATA RECEIVED:", aiData);
 
-    setFormData((prev) => ({
-      ...prev,
-      billTo: {
-        clientName: aiData.clientName || "",
-        email: aiData.email || "",
-        address: aiData.address || "",
-        phone: "",
-      },
-      items:
-        aiData.items?.length > 0
-          ? aiData.items.map((item) => ({
-              name: item.name || "",
-              quantity: item.quantity || 1,
-              unitPrice: item.unitPrice || 0,
-              taxPercent: item.taxPercent || 0,
-            }))
-          : prev.items,
-    }));
-  }
-}, [aiData]);
   /* ---------------- Input Handler ---------------- */
 
 const handleInputChange = (e, section = null, index = null) => {

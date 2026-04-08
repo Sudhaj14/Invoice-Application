@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 
 import CreateInvoice from "./CreateInvoice";
 import Button from "../../components/ui/Button";
-import ReminderModal from "../../components/invoices/ReminderModal";
+// import ReminderModal from "../../components/invoices/ReminderModal";
 
 const InvoiceDetail = () => {
   const { id } = useParams();

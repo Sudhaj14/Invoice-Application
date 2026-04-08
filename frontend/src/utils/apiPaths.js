@@ -21,10 +21,4 @@ export const API_PATHS = {
     UPDATE_INVOICE: (id) => `${BASE_URL}/api/invoices/${id}`,
     DELETE_INVOICE: (id) => `${BASE_URL}/api/invoices/${id}`,
   },
-
-  AI: {
-    PARSE_INVOICE_TEXT: `${BASE_URL}/api/ai/parse-text`,
-    GENERATE_REMINDER: `${BASE_URL}/api/ai/generate-reminder`,
-    GET_DASHBOARD_SUMMARY: `${BASE_URL}/api/ai/dashboard-summary`,
-  },
 };
