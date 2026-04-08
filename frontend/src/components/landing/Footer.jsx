@@ -33,7 +33,7 @@ const Footer = () => {
           {/* Brand */}
           <div>
             <h2 className="text-2xl font-bold text-white mb-4">
-              AI Invoice App
+              Invoice App
             </h2>
             <p className="text-gray-400 leading-relaxed">
               Smart invoice generation powered by AI. Create, manage and track

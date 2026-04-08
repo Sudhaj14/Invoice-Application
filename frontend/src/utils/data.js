@@ -3,13 +3,13 @@ import {LayoutDashboard, BarChart2, FileText, Mail, Sparkles,Plus,Users } from "
 export const FEATURES = [
   {
     icon: Sparkles,
-    title: "AI Invoice Creation",
+    title: "Invoice Creation",
     description:
       "Paste any text, email, or receipt, and let our AI instantly generate a complete, professional invoice.",
   },
   {
     icon: BarChart2,
-    title: "AI-Powered Dashboard",
+    title: "Powered Dashboard",
     description:
       "Get smart, actionable insights about your business finances, generated automatically.",
   },

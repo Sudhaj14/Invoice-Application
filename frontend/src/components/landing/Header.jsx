@@ -46,7 +46,7 @@ const Header = () => {
               <FileText className="w-4 h-4 text-white" />
             </div>
             <span className="text-xl font-bold text-gray-900">
-              AI Invoice App
+              Invoice App
             </span>
           </div>
 
