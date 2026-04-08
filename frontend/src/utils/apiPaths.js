@@ -1,24 +1,30 @@
-const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+// apipaths.js
 
+// ✅ Base URL from Vite env
+export const BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  "https://invoice-application-lttb.onrender.com";
+
+// ✅ All API endpoints
 export const API_PATHS = {
   AUTH: {
-    REGISTER: "/api/auth/register", // Signup
-    LOGIN: "/api/auth/login", // Authenticate user & return JWT token
-    GET_PROFILE: "/api/auth/me", // Get logged-in user details
-    UPDATE_PROFILE: "/api/auth/me", // Update profile details (PUT)
+    REGISTER: `${BASE_URL}/api/auth/register`,
+    LOGIN: `${BASE_URL}/api/auth/login`,
+    GET_PROFILE: `${BASE_URL}/api/auth/me`,
+    UPDATE_PROFILE: `${BASE_URL}/api/auth/me`,
   },
 
   INVOICE: {
-    CREATE: "/api/invoices/",
-    GET_ALL_INVOICES: "/api/invoices/",
-    GET_INVOICE_BY_ID: (id) => `/api/invoices/${id}`,
-    UPDATE_INVOICE: (id) => `/api/invoices/${id}`,
-    DELETE_INVOICE: (id) => `/api/invoices/${id}`,
+    CREATE: `${BASE_URL}/api/invoices/`,
+    GET_ALL_INVOICES: `${BASE_URL}/api/invoices/`,
+    GET_INVOICE_BY_ID: (id) => `${BASE_URL}/api/invoices/${id}`,
+    UPDATE_INVOICE: (id) => `${BASE_URL}/api/invoices/${id}`,
+    DELETE_INVOICE: (id) => `${BASE_URL}/api/invoices/${id}`,
   },
 
   AI: {
-    PARSE_INVOICE_TEXT: "/api/ai/parse-text",
-    GENERATE_REMINDER: "/api/ai/generate-reminder",
-    GET_DASHBOARD_SUMMARY: "/api/ai/dashboard-summary",
+    PARSE_INVOICE_TEXT: `${BASE_URL}/api/ai/parse-text`,
+    GENERATE_REMINDER: `${BASE_URL}/api/ai/generate-reminder`,
+    GET_DASHBOARD_SUMMARY: `${BASE_URL}/api/ai/dashboard-summary`,
   },
 };

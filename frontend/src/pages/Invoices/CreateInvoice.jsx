@@ -171,7 +171,30 @@ useEffect(() => {
     }));
   }
 }, [user]);
+useEffect(() => {
+  if (aiData) {
+    console.log("🔥 AI DATA RECEIVED:", aiData);
 
+    setFormData((prev) => ({
+      ...prev,
+      billTo: {
+        clientName: aiData.clientName || "",
+        email: aiData.email || "",
+        address: aiData.address || "",
+        phone: "",
+      },
+      items:
+        aiData.items?.length > 0
+          ? aiData.items.map((item) => ({
+              name: item.name || "",
+              quantity: item.quantity || 1,
+              unitPrice: item.unitPrice || 0,
+              taxPercent: item.taxPercent || 0,
+            }))
+          : prev.items,
+    }));
+  }
+}, [aiData]);
   /* ---------------- Input Handler ---------------- */
 
 const handleInputChange = (e, section = null, index = null) => {

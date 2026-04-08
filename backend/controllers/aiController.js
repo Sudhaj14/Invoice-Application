@@ -15,7 +15,8 @@ if (useAI) {
     ai = null;
   }
 }
-
+console.log("USE_AI:", process.env.USE_AI);
+console.log("GEMINI_API_KEY:", process.env.GEMINI_API_KEY ? "EXISTS" : "MISSING");
 // Helper function for delay
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -77,31 +78,27 @@ const parseInvoiceFromText = async (req, res) => {
 
   try {
     const prompt = `
-You are an expert invoice data extraction AI. Analyze the following text and extract the relevant details.
-The output MUST be a valid JSON object.
+Extract invoice details from the text below.
 
-The JSON object should have the following structure:
+Return ONLY valid JSON. No explanation. No extra text.
+
+Format:
 {
-  "clientName": "string",
-  "email": "string (if available)",
-  "address": "string (if available)",
+  "clientName": "",
+  "email": "",
+  "address": "",
   "items": [
     {
-      "name": "string",
-      "quantity": number,
-      "unitPrice": number
+      "name": "",
+      "quantity": 0,
+      "unitPrice": 0
     }
   ]
 }
 
-Here is the text to parse:
---- TEXT START ---
+Text:
 ${text}
---- TEXT END ---
-
-Extract the data and provide only the JSON object.
 `;
-
     // Fallback response for when AI is unavailable
     const fallbackResponse = JSON.stringify({
       clientName: "Client",
@@ -129,6 +126,9 @@ Extract the data and provide only the JSON object.
       items: []
     });
   }
+  console.log("USE_AI:", process.env.USE_AI);
+console.log("API KEY EXISTS:", !!process.env.GEMINI_API_KEY);
+console.log("AI OBJECT:", ai);
 };
 
 /* =========================================

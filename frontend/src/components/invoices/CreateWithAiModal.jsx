@@ -13,35 +13,49 @@ const CreateWithAiModal = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
 
   const handleGenerate = async () => {
-    if (!text.trim()) {
-      toast.error("Please paste some text to generate an invoice.");
-      return;
-    }
+  if (!text.trim()) {
+    toast.error("Please paste some text to generate an invoice.");
+    return;
+  }
 
-    setIsLoading(true);
+  setIsLoading(true);
 
-    try {
-      const response = await axiosInstance.post(
-        API_PATHS.AI.PARSE_INVOICE_TEXT,
-        { text }
-      );
+  try {
+    console.log("🚀 Sending request...");
+    console.log("URL:", API_PATHS.AI?.PARSE_INVOICE_TEXT);
+    console.log("Payload:", { text });
 
-      const invoiceData = response.data;
+    const response = await axiosInstance.post(
+      API_PATHS.AI.PARSE_INVOICE_TEXT,
+      { text }
+    );
 
-      toast.success("Invoice data extracted successfully!");
-      onClose();
+    console.log("✅ FULL RESPONSE:", response);
+console.log("✅ RESPONSE DATA:", response.data);
+console.log("✅ TYPE:", typeof response.data);
 
-      // Navigate to create invoice page with parsed data
-      navigate("/invoices/new", {
-        state: { aiData: invoiceData },
-      });
-    } catch (error) {
-      toast.error("Failed to generate invoice from text.");
-      console.error("AI parsing error:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    const invoiceData = response.data;
+
+    toast.success("Invoice data extracted successfully!");
+    onClose();
+
+    navigate("/invoices/new", {
+      state: { aiData: invoiceData },
+    });
+  } catch (error) {
+    console.error("❌ FULL ERROR:", error);
+    console.error("❌ RESPONSE:", error?.response);
+    console.error("❌ DATA:", error?.response?.data);
+    console.error("❌ STATUS:", error?.response?.status);
+
+    toast.error(
+      error?.response?.data?.message ||
+      "Failed to generate invoice from text."
+    );
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   if (!isOpen) return null;
 
